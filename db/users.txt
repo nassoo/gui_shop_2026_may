@@ -1,1 +1,2 @@
-{"username": "test", "password": "123", "first_name": "test_fn", "last_name": "test_ln", "products": [2, 2, 2, 2, 14, 1, 1, 1], "is_admin": true}
+{"username": "test", "password": "123", "first_name": "test_fn", "last_name": "test_ln", "products": [2, 2, 2, 1]}
+{"username": "test2", "password": "123", "first_name": "fn", "last_name": "ln", "products": []}
