@@ -3,6 +3,7 @@ from canvas import app
 from helpers import clean_screen
 from products import render_products_screen
 import json
+from string import punctuation, digits, ascii_uppercase, ascii_lowercase
 
 
 def login(username, password):
@@ -39,7 +40,35 @@ def render_login_screen(error=None):
 
 
 def register(**user):
-    # TODO: Validations
+    if user["username"] == "" or user["password"] == "" or user["first_name"] == "" or user["last_name"] == "":
+        render_register_screen(error="All fields are required!")
+        return
+    if len(user["username"]) < 4:
+        render_register_screen(error="Username must be at least 4 characters long!")
+        return
+    if len(user["password"]) < 4:
+        render_register_screen(error="Password must be at least 4 characters long!")
+        return
+    pass_validation_map = {"upper": False, "lower": False, "digit": False, "special": False}
+    for char in user["password"]:
+        if char in ascii_uppercase:
+            pass_validation_map["upper"] = True
+        elif char in ascii_lowercase:
+            pass_validation_map["lower"] = True
+        elif char in digits:
+            pass_validation_map["digit"] = True
+        elif char in punctuation:
+            pass_validation_map["special"] = True
+    if not all(pass_validation_map.values()):
+        render_register_screen(error="Password must contain at least one uppercase letter, one lowercase letter, "
+                                     "one digit and one special character!")
+        return
+    if user["first_name"].isalpha() is False or user["last_name"].isalpha() is False:
+        render_register_screen(error="First name and last name must contain only letters!")
+        return
+    if len(user["first_name"]) < 2 or len(user["last_name"]) < 2:
+        render_register_screen(error="First name and last name must be at least 2 characters long!")
+        return
 
     user.update({"products": []})
 

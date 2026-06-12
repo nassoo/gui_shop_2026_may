@@ -41,8 +41,58 @@ def buy_product(product_id):
 
     render_products_screen()
 
+def add_product(name, count, img_path):
+    with open("db/products.txt", "a") as f:
+        if name == "" or count == "" or img_path == "":
+            render_new_product_screen("All fields are required!")
+            return
+        if not count.isdigit() or int(count) < 0:
+            render_new_product_screen("Count must be a non-negative integer!")
+            return
+        product = {
+            "id": len(open("db/products.txt").readlines()) + 1,
+            "name": name,
+            "count": int(count),
+            "img_path": img_path
+        }
+        f.write(json.dumps(product) + "\n")
+    render_products_screen()
+
+def render_new_product_screen(error=None):
+    clean_screen()
+
+    tk.Label(app, text="Product name").grid(row=0, column=0)
+    name_entry = tk.Entry(app)
+    name_entry.grid(row=0, column=1)
+
+    tk.Label(app, text="Product count").grid(row=1, column=0)
+    count_entry = tk.Entry(app)
+    count_entry.grid(row=1, column=1)
+
+    tk.Label(app, text="Product image path").grid(row=2, column=0)
+    img_path_entry = tk.Entry(app)
+    img_path_entry.grid(row=2, column=1)
+
+    tk.Button(app,
+              text="Add product",
+              command=lambda: add_product(name_entry.get(), count_entry.get(), img_path_entry.get())
+              ).grid(row=3, column=0, columnspan=2)
+
+    if error:
+        tk.Label(app, text=error).grid(row=4, column=0, columnspan=2)
+
 def render_products_screen():
     clean_screen()
+
+    with open("db/current_user.txt") as f:
+        username = f.read()
+    with open("db/users.txt") as f:
+        users = [json.loads(u.strip()) for u in f]
+        current_user = next((u for u in users if u["username"] == username), None)
+        if current_user:
+            tk.Button(app,
+                      text="Add product",
+                      command=render_new_product_screen).grid(row=0, column=0)
 
     with open("db/products.txt") as file:
         products = [json.loads(p.strip()) for p in file]
@@ -50,7 +100,7 @@ def render_products_screen():
         rows_per_product = len(products[0])
         products_per_row = 6
         for i, product in enumerate(products):
-            row = i // products_per_row * rows_per_product
+            row = i // products_per_row * rows_per_product + 1
             column = i % products_per_row
             tk.Label(app, text=product["name"]).grid(row=row, column=column)
 
